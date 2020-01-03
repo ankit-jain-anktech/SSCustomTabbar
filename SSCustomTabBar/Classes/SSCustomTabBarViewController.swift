@@ -45,14 +45,15 @@ public class SSCustomTabBarViewController: UITabBarController {
     }
     
     private var kBarHeight: CGFloat?
-    
+    private var firstState: Bool = false
+
     private var kUpAnimationPoint: CGFloat = 20
     
     private var priviousSelectedIndex: Int = defaultIndexValue
     
     override public func viewDidLoad() {
         super.viewDidLoad()
-        
+
         // Do any additional setup after loading the view.
     }
     
@@ -72,7 +73,6 @@ public class SSCustomTabBarViewController: UITabBarController {
         self.applicationDidBecomeActive()
     }
     
-    
     /// setObserver
     func setObserver() {
         NotificationCenter.default.addObserver(self,
@@ -91,7 +91,7 @@ public class SSCustomTabBarViewController: UITabBarController {
     @objc func applicationDidBecomeActive() {
         DispatchQueue.main.async { [weak self] in
             guard let uSelf = self else { return }
-            let view = uSelf.getUpView(index: uSelf.selectedIndex)
+            let view = uSelf.getUpView(index: 2)
             if view.frame.origin.y > 0 {
                 view.frame.origin.y -= uSelf.kUpAnimationPoint
             }
@@ -131,29 +131,18 @@ extension SSCustomTabBarViewController {
         
         if let uSelf = self.tabBar as? SSCustomTabBar, let items = uSelf.items, let index = items.firstIndex(of: item), index != self.priviousSelectedIndex {
             
+
             let width = UIScreen.main.bounds.width/CGFloat(items.count)
-            let changeValue = (width*CGFloat(index+1))-(width/2)
+            let changeValue = (width*CGFloat(3))-(width/2)
             uSelf.animating = true
-            
+
             let orderedTabBarItemViews: [UIView] = {
                 let interactionViews = tabBar.subviews.filter({ $0 is UIControl })
                 return interactionViews.sorted(by: { $0.frame.minX < $1.frame.minX })
             }()
-            
-            orderedTabBarItemViews.forEach({ (objectView) in
-                let objectIndex = orderedTabBarItemViews.firstIndex(of: objectView)
-                if index ==  objectIndex {
-                    print(index)
-                }else if  objectIndex == priviousSelectedIndex {
-                    UIView.animate(withDuration: 0.9, delay: 0.0, usingSpringWithDamping: 0.57, initialSpringVelocity: 0.0, options: .curveEaseInOut, animations: {
-                        objectView.frame = CGRect(x: objectView.frame.origin.x, y: objectView.frame.origin.y + self.kUpAnimationPoint, width: objectView.frame.width, height: objectView.frame.height)
-                    }, completion: nil)
-                }
-            })
             self.priviousSelectedIndex = index
-            performSpringAnimation(for: orderedTabBarItemViews[index], changeValue: changeValue)
+            performSpringAnimation(for: orderedTabBarItemViews[2], changeValue: changeValue)
         }
-        
     }
     
     
@@ -178,15 +167,19 @@ extension SSCustomTabBarViewController {
     func performSpringAnimation(for view: UIView, changeValue: CGFloat) {
         
         if let uSelf = self.tabBar as? SSCustomTabBar {
+            
             UIView.animate(withDuration: 0.9, delay: 0.0, usingSpringWithDamping: 0.57, initialSpringVelocity: 0.0, options: [], animations: { () -> Void in
                 uSelf.setDefaultlayoutControlPoints(waveHeight: uSelf.minimalHeight, locationX: changeValue)
                 
             }, completion: { _ in
                 uSelf.animating = false
             })
-            UIView.animate(withDuration: 0.9, delay: 0.0, usingSpringWithDamping: 0.57, initialSpringVelocity: 0.0, options: .curveEaseInOut, animations: {
-                view.frame = CGRect(x: view.frame.origin.x, y: view.frame.origin.y - self.kUpAnimationPoint, width: view.frame.width, height: view.frame.height)
-            }, completion: nil)
+            if firstState == false {
+                firstState = true
+                UIView.animate(withDuration: 0.9, delay: 0.0, usingSpringWithDamping: 0.57, initialSpringVelocity: 0.0, options: .curveEaseInOut, animations: {
+                    view.frame = CGRect(x: view.frame.origin.x, y: view.frame.origin.y - self.kUpAnimationPoint, width: view.frame.width, height: view.frame.height)
+                }, completion: nil)
+            }
         }
     }
     
