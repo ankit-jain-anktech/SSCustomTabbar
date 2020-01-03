@@ -53,7 +53,7 @@ public class SSCustomTabBarViewController: UITabBarController {
     
     override public func viewDidLoad() {
         super.viewDidLoad()
-
+        self.view.clipsToBounds = true
         // Do any additional setup after loading the view.
     }
     
