@@ -49,7 +49,7 @@ public class SSCustomTabBar: UITabBar {
             return UIColor(cgColor: self.layer.shadowColor ?? UIColor.clear.cgColor)
         }
         set{
-            self.layer.shadowColor = newValue.cgColor
+            self.layer.shadowColor = UIColor.gray.cgColor // newValue.cgColor
         }
     }
     
@@ -167,7 +167,7 @@ extension SSCustomTabBar {
         self.layer.shadowOffset = shadowOffset
         self.layer.shadowRadius = shadowRadius
         self.layer.shadowColor = shadowColor.cgColor
-        self.layer.shadowOpacity = 1.0
+        self.layer.shadowOpacity = 0.5
         
         self.addSubview(leftPoint4)
         self.addSubview(leftPoint3)
@@ -178,7 +178,6 @@ extension SSCustomTabBar {
         self.addSubview(rightPoint1)
         self.addSubview(rightPoint2)
         self.addSubview(rightPoint4)
-        self.displayLink = CADisplayLink(target: self, selector: #selector(updateShapeLayer))
         self.displayLink?.add(to: RunLoop.main, forMode: RunLoop.Mode.default)
         self.displayLink?.isPaused = true
         
@@ -189,7 +188,7 @@ extension SSCustomTabBar {
         
         let width = UIScreen.main.bounds.width/CGFloat(self.items?.count ?? 0)
         if let selectedItem = self.selectedItem {
-            let index = (self.items?.firstIndex(of: selectedItem) ?? 0)+1
+            let index = (self.items?.firstIndex(of: selectedItem) ?? 0)+3
             let changeValue = (width*(CGFloat(index)))-(width/2)
             self.setDefaultlayoutControlPoints(waveHeight: minimalHeight, locationX: changeValue)
             self.updateShapeLayer()
